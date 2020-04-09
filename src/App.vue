@@ -41,7 +41,7 @@
                 height="75px"
               />
             </td>
-            <td></td>
+            <td>{{monster.name}}</td>
             <td>{{monster.race}}</td>
             <td>{{monster.strength}}</td>
             <td>{{monster.health}}</td>
@@ -78,6 +78,7 @@
 
 <script>
 // import HelloWorld from "./components/HelloWorld.vue";
+import names from "./assets/names.js";
 
 export default {
   name: "app",
@@ -87,43 +88,32 @@ export default {
   data: function() {
     return {
       monsters: [],
-      races: ["Dragon", "Witch", "Snake", "River Troll"]
+      races: ["Dragon", "Witch", "Snake", "River Troll"],
+      monsterNames: names,
+      Witch: {},
+      Dragon: {},
+      Troll: {},
+      Snake: {}
     };
   },
   created() {
-    for (let x = 1; x <= 100; x++) {
-      let r = Math.floor(Math.random() * 4);
-      let monster = {};
-      monster.race = this.races[r];
-      if (monster.race === "Witch") {
-        monster.health = Math.floor(Math.random() * 11) + 50;
-        monster.strength = Math.floor(Math.random() * 21) + 60;
-        monster.image = "witch";
-      }
-      if (monster.race === "Dragon") {
-        monster.health = Math.floor(Math.random() * 11) + 80;
-        monster.strength = Math.floor(Math.random() * 11) + 80;
-        monster.image = "dragon";
-      }
-      if (monster.race === "Snake") {
-        monster.health = Math.floor(Math.random() * 61) + 30;
-        monster.strength = Math.floor(Math.random() * 31) + 30;
-        monster.image = "snake";
-      }
-      if (monster.race === "River Troll") {
-        monster.strength = Math.floor(Math.random() * 34) + 22;
-        monster.health = Math.floor(Math.random() * 33) + 60;
-        monster.image = "troll";
-      }
-      monster.row = "row" + (x % 4);
-      this.monsters.push(monster);
-    }
+    this.createMonsters();
   },
   methods: {
-    rollDice: function() {
-      window.alert("About to fight");
+    createName: function(nameList, hash) {
+      let named = false;
+      let n = 0;
+      while (named == false) {
+        n = Math.floor(Math.random() * nameList.length);
+        if (!hash[n]) {
+          hash[n] = true;
+          name = nameList[n];
+          named = true;
+        }
+      }
+      return name;
     },
-    reset: function() {
+    createMonsters: function() {
       this.monsters = [];
       for (let x = 1; x <= 100; x++) {
         let r = Math.floor(Math.random() * 4);
@@ -133,25 +123,39 @@ export default {
           monster.health = Math.floor(Math.random() * 11) + 50;
           monster.strength = Math.floor(Math.random() * 21) + 60;
           monster.image = "witch";
+          monster.name = this.createName(this.monsterNames.witch, this.Witch);
         }
         if (monster.race === "Dragon") {
           monster.health = Math.floor(Math.random() * 11) + 80;
           monster.strength = Math.floor(Math.random() * 11) + 80;
           monster.image = "dragon";
+          monster.name = this.createName(this.monsterNames.dragon, this.Dragon);
         }
         if (monster.race === "Snake") {
           monster.health = Math.floor(Math.random() * 61) + 30;
           monster.strength = Math.floor(Math.random() * 31) + 30;
           monster.image = "snake";
+          monster.name = this.createName(this.monsterNames.snake, this.Snake);
         }
         if (monster.race === "River Troll") {
           monster.strength = Math.floor(Math.random() * 34) + 22;
           monster.health = Math.floor(Math.random() * 33) + 60;
           monster.image = "troll";
+          monster.name = this.createName(this.monsterNames.troll, this.Troll);
         }
         monster.row = "row" + (x % 4);
         this.monsters.push(monster);
       }
+    },
+    rollDice: function() {
+      window.alert("About to fight");
+    },
+    reset: function() {
+      (this.Witch = {}),
+        (this.Dragon = {}),
+        (this.Troll = {}),
+        (this.Snake = {});
+      this.createMonsters();
     },
     destroy: function() {
       window.alert("Delete Monster");
