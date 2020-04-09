@@ -1,8 +1,14 @@
 <template>
   <div id="app">
-    <img alt="Monster Battle Logo" src="./assets/monsterBattle_logo.png" style="height: 150px" />
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
     <main>
+      <img alt="Monster Battle Logo" src="./assets/monsterBattle_logo.png" style="height: 150px" />
+      <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
+      <header>
+        <div id="topButtons">
+          <button id="roll" v-on:click="rollDice()">Roll the Dice</button>
+          <button id="reset" v-on:click="reset()">Reset</button>
+        </div>
+      </header>
       <table border="1" width="1000" height="200">
         <tr>
           <th></th>
@@ -76,6 +82,41 @@ export default {
       monster.row = "row" + (x % 4);
       this.monsters.push(monster);
     }
+  },
+  methods: {
+    rollDice: function() {
+      window.alert("About to fight");
+    },
+    reset: function() {
+      this.monsters = [];
+      for (let x = 1; x <= 100; x++) {
+        let r = Math.floor(Math.random() * 4);
+        let monster = {};
+        monster.race = this.races[r];
+        if (monster.race === "Witch") {
+          monster.health = Math.floor(Math.random() * 11) + 50;
+          monster.strength = Math.floor(Math.random() * 21) + 60;
+          monster.image = "witch";
+        }
+        if (monster.race === "Dragon") {
+          monster.health = Math.floor(Math.random() * 11) + 80;
+          monster.strength = Math.floor(Math.random() * 11) + 80;
+          monster.image = "dragon";
+        }
+        if (monster.race === "Snake") {
+          monster.health = Math.floor(Math.random() * 61) + 30;
+          monster.strength = Math.floor(Math.random() * 31) + 30;
+          monster.image = "snake";
+        }
+        if (monster.race === "River Troll") {
+          monster.strength = Math.floor(Math.random() * 34) + 22;
+          monster.health = Math.floor(Math.random() * 33) + 60;
+          monster.image = "troll";
+        }
+        monster.row = "row" + (x % 4);
+        this.monsters.push(monster);
+      }
+    }
   }
 };
 </script>
@@ -87,12 +128,45 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  background-color: lightgray;
 }
 
 main {
-  margin-left: 10em;
-  padding-top: 1em;
+  margin-left: 12em;
+  margin-right: 10em;
+  padding-top: 0.5em;
+}
+
+header {
+  height: 60px;
+  padding-bottom: 15px;
+}
+
+#topButtons {
+  display: inline-block;
+  padding-top: 10px;
+}
+
+#roll {
+  height: 40px;
+  width: 120px;
+  background-color: navy;
+  color: white;
+  font-size: 16px;
+  font-weight: 900;
+  position: absolute;
+  left: 35vw;
+}
+
+#reset {
+  height: 40px;
+  width: 120px;
+  background-color: red;
+  color: white;
+  font-size: 16px;
+  font-weight: 900;
+  position: absolute;
+  right: 35vw;
 }
 
 #row1 {
