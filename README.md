@@ -1,26 +1,17 @@
 # monster-battle
 
-## Project setup
-```
-yarn install
-```
+<img src="/src/assets/AppPreviewImage.png">
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
+<p style="font-size: 18px">
+This App is being devleoped as part of the <i>How To Code Well</i> monthly challenges for March, April, and May.
+</p>
+<br/>
+<p style="font-size: 16px"> 
+A running Demo of the app can be found at <a href="https://netlify.com/monster-battle>" />
+</p>
 
-### Compiles and minifies for production
-```
-yarn run build
-```
+## Project Was Created Using Yarn
 
-### Run your tests
 ```
-yarn run test
-```
-
-### Lints and fixes files
-```
-yarn run lint
+all normal yarn commands (install, run serve, etc) apply
 ```
