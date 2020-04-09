@@ -5,36 +5,72 @@
       <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
       <header>
         <div id="topButtons">
-          <button id="roll" v-on:click="rollDice()">Roll the Dice</button>
-          <button id="reset" v-on:click="reset()">Reset</button>
+          <button
+            id="roll"
+            v-on:click="rollDice()"
+            @mouseover="hover = true"
+            @mouseleave="hover = false"
+          >Roll the Dice</button>
+          <button
+            id="reset"
+            v-on:click="reset()"
+            @mouseover="hover = true"
+            @mouseleave="hover = false"
+          >Reset</button>
         </div>
       </header>
-      <table border="1" width="1000" height="200">
-        <tr>
-          <th></th>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Strength</th>
-          <th>Health</th>
-          <th>Special Power</th>
-          <th>Action</th>
-        </tr>
-        <tr v-for="(monster, index) in monsters" :key="index" :id="monster.row">
-          <td>
-            <img
-              :src="require('@/assets/' + monster.image +'.png')"
-              alt="monster image"
-              width="75px"
-              height="75px"
-            />
-          </td>
-          <td></td>
-          <td>{{monster.race}}</td>
-          <td>{{monster.strength}}</td>
-          <td>{{monster.health}}</td>
-          <td></td>
-          <td></td>
-        </tr>
+      <table border="1" width="1100" height="200">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Strength</th>
+            <th>Health</th>
+            <th>Special Power</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(monster, index) in monsters" :key="index" :id="monster.row">
+            <td>
+              <img
+                :src="require('@/assets/' + monster.image +'.png')"
+                alt="monster image"
+                width="75px"
+                height="75px"
+              />
+            </td>
+            <td></td>
+            <td>{{monster.race}}</td>
+            <td>{{monster.strength}}</td>
+            <td>{{monster.health}}</td>
+            <td></td>
+            <td style="width: 300px">
+              <button
+                class="tableButton"
+                id="delete"
+                v-on:click="destroy()"
+                @mouseover="hover = true"
+                @mouseleave="hover = false"
+              >🚫</button>
+              <button
+                class="tableButton"
+                id="increaseHealth"
+                v-on:click="incHealth()"
+                @mouseover="hover = true"
+                @mouseleave="hover = false"
+              >💗</button>
+              <button
+                class="tableButton"
+                id="decreaseHealth"
+                v-on:click="decHealth()"
+                @mouseover="hover = true"
+                @mouseleave="hover = false"
+              >🤕</button>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </main>
   </div>
@@ -116,6 +152,15 @@ export default {
         monster.row = "row" + (x % 4);
         this.monsters.push(monster);
       }
+    },
+    destroy: function() {
+      window.alert("Delete Monster");
+    },
+    incHealth: function() {
+      window.alert("Monster's Health Increased");
+    },
+    decHealth: function() {
+      window.alert("Monster's Health Decreased");
     }
   }
 };
@@ -132,7 +177,7 @@ export default {
 }
 
 main {
-  margin-left: 12em;
+  margin-left: 10em;
   margin-right: 10em;
   padding-top: 0.5em;
 }
@@ -140,6 +185,11 @@ main {
 header {
   height: 60px;
   padding-bottom: 15px;
+}
+
+thead {
+  font-weight: bold;
+  color: #000;
 }
 
 #topButtons {
@@ -156,6 +206,12 @@ header {
   font-weight: 900;
   position: absolute;
   left: 35vw;
+  border: solid 3px white;
+}
+
+#roll:hover {
+  color: #000;
+  text-shadow: 2px 2px white;
 }
 
 #reset {
@@ -167,6 +223,12 @@ header {
   font-weight: 900;
   position: absolute;
   right: 35vw;
+  border: solid 3px white;
+}
+
+#reset:hover {
+  color: #000;
+  text-shadow: 2px 2px white;
 }
 
 #row1 {
@@ -175,17 +237,38 @@ header {
 }
 
 #row2 {
-  background-color: lightgreen;
+  background-color: lightpink;
   font-weight: 800;
 }
 
 #row3 {
-  background-color: lightpink;
+  background-color: lightcyan;
   font-weight: 800;
 }
 
 #row0 {
   background-color: lightgoldenrodyellow;
   font-weight: 800;
+}
+
+.tableButton {
+  width: 50px;
+  height: 35px;
+  background-color: ghostwhite;
+  border: solid 1px;
+  font-size: 16px;
+  margin-left: 10px;
+}
+
+#delete:hover {
+  background-color: gold;
+}
+
+#increaseHealth:hover {
+  background-color: gold;
+}
+
+#decreaseHealth:hover {
+  background-color: gold;
 }
 </style>
