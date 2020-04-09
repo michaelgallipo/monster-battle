@@ -7,7 +7,7 @@ This App is being devleoped as part of the <i>How To Code Well</i> monthly chall
 </p>
 <br/>
 <p style="font-size: 16px"> 
-A running Demo of the app can be found at <a href="https://netlify.com/monster-battle>" />
+A running Demo of the app can be found at https://netlify.com/monster-battle
 </p>
 
 ## Project Was Created Using Yarn
