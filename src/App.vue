@@ -76,6 +76,8 @@
     <modal
       v-bind:header="modalHeader"
       v-bind:msg="modalMessage"
+      v-bind:powersActive="powersActive"
+      v-bind:roll="d1"
       v-show="isModalVisible"
       @close="closeModal"
     />
@@ -103,7 +105,10 @@ export default {
       Snake: {},
       isModalVisible: false,
       modalHeader: "",
-      modalMessage: ""
+      modalMessage: "",
+      d1: 0,
+      d2: 0,
+      powersActive: false
     };
   },
   created() {
@@ -164,9 +169,16 @@ export default {
       this.isModalVisible = false;
     },
     rollDice: function() {
-      // window.alert("About to fight");
-      this.modalHeader = "BATTLE!";
-      this.modalMessage = "About to Fight";
+      this.d1 = Math.floor(Math.random() * 6) + 1;
+      this.d2 = Math.floor(Math.random() * 6) + 1;
+      if (this.d1 === this.d2) {
+        this.modalHeader = "SPECIAL POWERS ACTIVATED";
+        this.powersActive = true;
+      } else {
+        this.modalHeader = "DICE ROLLED";
+        this.powersActive = false;
+      }
+      this.modalMessage = "You rolled a " + this.d1 + " and a " + this.d2;
       this.showModal();
     },
     reset: function() {
