@@ -50,21 +50,21 @@
               <button
                 class="tableButton"
                 id="delete"
-                v-on:click="destroy()"
+                v-on:click="destroy(monster, index)"
                 @mouseover="hover = true"
                 @mouseleave="hover = false"
               >🚫</button>
               <button
                 class="tableButton"
                 id="increaseHealth"
-                v-on:click="incHealth()"
+                v-on:click="incHealth(monster)"
                 @mouseover="hover = true"
                 @mouseleave="hover = false"
               >💗</button>
               <button
                 class="tableButton"
                 id="decreaseHealth"
-                v-on:click="decHealth()"
+                v-on:click="decHealth(monster)"
                 @mouseover="hover = true"
                 @mouseleave="hover = false"
               >🤕</button>
@@ -176,19 +176,34 @@ export default {
         (this.Snake = {});
       this.createMonsters();
     },
-    destroy: function() {
+    destroy: function(monster, index) {
       this.modalHeader = "Delete Monster";
-      this.modalMessage = "";
+      this.modalMessage = monster.name + "has been deleted";
+      this.monsters.splice(index, 1);
       this.showModal();
     },
-    incHealth: function() {
-      this.modalHeader = "Monster's Health Increased";
-      this.modalMessage = "";
+    incHealth: function(monster) {
+      monster.health++;
+      this.modalHeader = "Heal Successful";
+      this.modalMessage =
+        monster.name +
+        " gained +1 health \n" +
+        monster.name +
+        " now has " +
+        monster.health +
+        " health";
       this.showModal();
     },
-    decHealth: function() {
-      this.modalHeader = "Monster's Health Decreased";
-      this.modalMessage = "";
+    decHealth: function(monster) {
+      monster.health--;
+      this.modalHeader = "Health Decrease";
+      this.modalMessage =
+        monster.name +
+        " lost -1 health \n" +
+        monster.name +
+        " now has " +
+        monster.health +
+        " health";
       this.showModal();
     }
   }

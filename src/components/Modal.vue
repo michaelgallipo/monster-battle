@@ -5,7 +5,7 @@
         <div id="header">{{header}}</div>
       </header>
       <section class="modal-body">
-        <div id="body">{{msg}}</div>
+        <div id="body" class="pre-formatted">{{msg}}</div>
       </section>
       <footer class="modal-footer">
         <div id="footer">
@@ -65,6 +65,10 @@
 .modal-body {
   position: relative;
   padding: 20px 10px;
+}
+
+.pre-formatted {
+  white-space: pre;
 }
 
 /* .btn-close {
