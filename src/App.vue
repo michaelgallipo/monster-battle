@@ -73,18 +73,25 @@
         </tbody>
       </table>
     </main>
+    <modal
+      v-bind:header="modalHeader"
+      v-bind:msg="modalMessage"
+      v-show="isModalVisible"
+      @close="closeModal"
+    />
   </div>
 </template>
 
 <script>
 // import HelloWorld from "./components/HelloWorld.vue";
 import names from "./assets/names.js";
+import modal from "./components/Modal.vue";
 
 export default {
   name: "app",
-  // components: {
-  //   HelloWorld
-  // }
+  components: {
+    modal
+  },
   data: function() {
     return {
       monsters: [],
@@ -93,7 +100,10 @@ export default {
       Witch: {},
       Dragon: {},
       Troll: {},
-      Snake: {}
+      Snake: {},
+      isModalVisible: false,
+      modalHeader: "",
+      modalMessage: ""
     };
   },
   created() {
@@ -147,8 +157,17 @@ export default {
         this.monsters.push(monster);
       }
     },
+    showModal() {
+      this.isModalVisible = true;
+    },
+    closeModal() {
+      this.isModalVisible = false;
+    },
     rollDice: function() {
-      window.alert("About to fight");
+      // window.alert("About to fight");
+      this.modalHeader = "BATTLE!";
+      this.modalMessage = "About to Fight";
+      this.showModal();
     },
     reset: function() {
       (this.Witch = {}),
@@ -158,13 +177,19 @@ export default {
       this.createMonsters();
     },
     destroy: function() {
-      window.alert("Delete Monster");
+      this.modalHeader = "Delete Monster";
+      this.modalMessage = "";
+      this.showModal();
     },
     incHealth: function() {
-      window.alert("Monster's Health Increased");
+      this.modalHeader = "Monster's Health Increased";
+      this.modalMessage = "";
+      this.showModal();
     },
     decHealth: function() {
-      window.alert("Monster's Health Decreased");
+      this.modalHeader = "Monster's Health Decreased";
+      this.modalMessage = "";
+      this.showModal();
     }
   }
 };
