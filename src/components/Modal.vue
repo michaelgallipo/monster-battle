@@ -6,13 +6,7 @@
       </header>
       <section class="modal-body">
         <div id="body" class="pre-formatted">{{msg}}</div>
-        <slot name="specialPowers">
-          <div v-if="powersActive === true">
-            <ul v-for="(power, index) in specialPowers" :key="index">
-              <li class="powersList" v-if="index <= roll - 1">{{power}}</li>
-            </ul>
-          </div>
-        </slot>
+        <slot name="options"></slot>
       </section>
       <footer class="modal-footer">
         <div id="footer">
@@ -95,10 +89,6 @@
   border-radius: 2px;
   height: 35px;
 }
-
-.powersList {
-  text-align: left;
-}
 </style>
 
 <script>
@@ -106,22 +96,9 @@ export default {
   name: "modal",
   props: {
     header: String,
-    msg: String,
-    powersActive: Boolean,
-    roll: Number
+    msg: String
   },
-  data: function() {
-    return {
-      specialPowers: [
-        "Inceaese Health to 100",
-        "Decrease Opponent Health by 100",
-        "Increase Strength by 1 - 100",
-        "Decrease Opponent Strength by 1-100",
-        "Hide",
-        "Steals 50% of Strength from Opponent"
-      ]
-    };
-  },
+
   methods: {
     close() {
       this.$emit("close");

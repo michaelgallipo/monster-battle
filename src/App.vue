@@ -76,11 +76,17 @@
     <modal
       v-bind:header="modalHeader"
       v-bind:msg="modalMessage"
-      v-bind:powersActive="powersActive"
-      v-bind:roll="d1"
       v-show="isModalVisible"
       @close="closeModal"
-    />
+    >
+      <template #options>
+        <div v-if="powersActive === true">
+          <ul v-for="(power, index) in specialPowers" :key="index">
+            <li class="powersList" v-if="index <= d1 - 1">{{power}}</li>
+          </ul>
+        </div>
+      </template>
+    </modal>
   </div>
 </template>
 
@@ -98,6 +104,7 @@ export default {
     return {
       monsters: [],
       races: ["Dragon", "Witch", "Snake", "River Troll"],
+      specialPowers: [],
       monsterNames: names,
       Witch: {},
       Dragon: {},
@@ -113,6 +120,14 @@ export default {
   },
   created() {
     this.createMonsters();
+    this.specialPowers = [
+      "Inceaese Health to 100",
+      "Decrease Opponent Health by 100",
+      "Increase Strength by 1 - 100",
+      "Decrease Opponent Strength by 1-100",
+      "Hide",
+      "Steals 50% of Strength from Opponent"
+    ];
   },
   methods: {
     createName: function(nameList, hash) {
@@ -326,5 +341,9 @@ thead {
 
 #decreaseHealth:hover {
   background-color: gold;
+}
+
+.powersList {
+  text-align: left;
 }
 </style>
