@@ -19,7 +19,7 @@
           >Reset</button>
         </div>
       </header>
-      <table border="1" width="1100" height="200">
+      <table width="1100" height="200">
         <thead>
           <tr>
             <th></th>
@@ -243,7 +243,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  background-color: lightgray;
+  background-image: url("./assets/dragonBackground.jpg");
 }
 
 main {
@@ -260,6 +260,17 @@ header {
 thead {
   font-weight: bold;
   color: #000;
+  background-color: ghostwhite;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
 }
 
 #topButtons {
