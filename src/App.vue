@@ -6,12 +6,14 @@
       <header>
         <div id="topButtons">
           <button
+            class="topButton"
             id="roll"
             v-on:click="rollDice()"
             @mouseover="hover = true"
             @mouseleave="hover = false"
           >Roll the Dice</button>
           <button
+            class="topButton"
             id="reset"
             v-on:click="reset()"
             @mouseover="hover = true"
@@ -130,6 +132,7 @@ export default {
     ];
   },
   methods: {
+    // method creates a random name depending on race of monster and tracks what names have been used.
     createName: function(nameList, hash) {
       let named = false;
       let n = 0;
@@ -210,6 +213,7 @@ export default {
     },
     incHealth: function(monster) {
       monster.health++;
+      // Modal message generation before deactivated
       // this.modalHeader = "Heal Successful";
       // this.modalMessage =
       //   monster.name +
@@ -222,6 +226,7 @@ export default {
     },
     decHealth: function(monster) {
       monster.health--;
+      // Modal message generation before deactivated
       // this.modalHeader = "Health Decrease";
       // this.modalMessage =
       //   monster.name +
@@ -278,38 +283,34 @@ td {
   padding-top: 10px;
 }
 
-#roll {
+.topButton {
   height: 40px;
   width: 120px;
-  background-color: navy;
   color: white;
   font-size: 16px;
   font-weight: 900;
   position: absolute;
-  left: 35vw;
   border: solid 3px white;
 }
 
-#roll:hover {
+.topButton:hover {
   color: #000;
   text-shadow: 2px 2px white;
+}
+
+#roll {
+  background-color: navy;
+  left: 35vw;
 }
 
 #reset {
-  height: 40px;
-  width: 120px;
   background-color: red;
-  color: white;
-  font-size: 16px;
-  font-weight: 900;
-  position: absolute;
   right: 35vw;
-  border: solid 3px white;
 }
 
-#reset:hover {
-  color: #000;
-  text-shadow: 2px 2px white;
+.row0 {
+  background-color: lightgoldenrodyellow;
+  font-weight: 800;
 }
 
 .row1 {
@@ -327,11 +328,6 @@ td {
   font-weight: 800;
 }
 
-.row0 {
-  background-color: lightgoldenrodyellow;
-  font-weight: 800;
-}
-
 .tableButton {
   width: 50px;
   height: 35px;
@@ -341,15 +337,7 @@ td {
   margin-left: 10px;
 }
 
-#delete:hover {
-  background-color: gold;
-}
-
-#increaseHealth:hover {
-  background-color: gold;
-}
-
-#decreaseHealth:hover {
+.tableButton:hover {
   background-color: gold;
 }
 

@@ -72,22 +72,13 @@
   white-space: pre;
 }
 
-/* .btn-close {
-  border: none;
-  font-size: 20px;
-  padding: 20px;
-  cursor: pointer;
-  font-weight: bold;
-  color: #4aae9b;
-  background: transparent;
-} */
-
 .btn-green {
   color: white;
   background: #4aae9b;
   border: 1px solid #4aae9b;
   border-radius: 2px;
   height: 35px;
+  font-weight: 800;
 }
 </style>
 
