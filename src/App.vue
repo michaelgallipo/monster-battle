@@ -32,7 +32,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(monster, index) in monsters" :key="index" :id="monster.row">
+          <tr v-for="(monster, index) in monsters" :key="index" :class="'row' + index % 4">
             <td>
               <img
                 :src="require('@/assets/' + monster.image +'.png')"
@@ -173,7 +173,6 @@ export default {
           monster.image = "troll";
           monster.name = this.createName(this.monsterNames.troll, this.Troll);
         }
-        monster.row = "row" + (x % 4);
         this.monsters.push(monster);
       }
     },
@@ -205,33 +204,33 @@ export default {
     },
     destroy: function(monster, index) {
       this.modalHeader = "Delete Monster";
-      this.modalMessage = monster.name + "has been deleted";
+      this.modalMessage = monster.name + " has been deleted";
       this.monsters.splice(index, 1);
       this.showModal();
     },
     incHealth: function(monster) {
       monster.health++;
-      this.modalHeader = "Heal Successful";
-      this.modalMessage =
-        monster.name +
-        " gained +1 health \n" +
-        monster.name +
-        " now has " +
-        monster.health +
-        " health";
-      this.showModal();
+      // this.modalHeader = "Heal Successful";
+      // this.modalMessage =
+      //   monster.name +
+      //   " gained +1 health \n" +
+      //   monster.name +
+      //   " now has " +
+      //   monster.health +
+      //   " health";
+      // this.showModal();
     },
     decHealth: function(monster) {
       monster.health--;
-      this.modalHeader = "Health Decrease";
-      this.modalMessage =
-        monster.name +
-        " lost -1 health \n" +
-        monster.name +
-        " now has " +
-        monster.health +
-        " health";
-      this.showModal();
+      // this.modalHeader = "Health Decrease";
+      // this.modalMessage =
+      //   monster.name +
+      //   " lost -1 health \n" +
+      //   monster.name +
+      //   " now has " +
+      //   monster.health +
+      //   " health";
+      // this.showModal();
     }
   }
 };
@@ -302,22 +301,22 @@ thead {
   text-shadow: 2px 2px white;
 }
 
-#row1 {
+.row1 {
   background-color: lightsteelblue;
   font-weight: 800;
 }
 
-#row2 {
+.row2 {
   background-color: lightpink;
   font-weight: 800;
 }
 
-#row3 {
+.row3 {
   background-color: lightcyan;
   font-weight: 800;
 }
 
-#row0 {
+.row0 {
   background-color: lightgoldenrodyellow;
   font-weight: 800;
 }
