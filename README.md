@@ -1,6 +1,6 @@
 # monster-battle
 
-<img src="/src/assets/AppPreviewImage.png">
+<img src="/src/assets/AppPreviewImage2.png">
 
 <p style="font-size: 18px">
 This App is being devleoped as part of the <i>How To Code Well</i> monthly challenges for March, April, and May.
