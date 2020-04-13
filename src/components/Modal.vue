@@ -5,7 +5,8 @@
         <div id="header">{{header}}</div>
       </header>
       <section class="modal-body">
-        <div id="body">{{msg}}</div>
+        <div id="body" class="pre-formatted">{{msg}}</div>
+        <slot name="options"></slot>
       </section>
       <footer class="modal-footer">
         <div id="footer">
@@ -35,7 +36,7 @@
   overflow-x: auto;
   display: flex;
   flex-direction: column;
-  width: 300px;
+  width: 400px;
 }
 
 .modal-header,
@@ -53,7 +54,7 @@
 }
 
 #header {
-  width: 265px;
+  width: 365px;
   text-align: center;
 }
 
@@ -65,6 +66,10 @@
 .modal-body {
   position: relative;
   padding: 20px 10px;
+}
+
+.pre-formatted {
+  white-space: pre;
 }
 
 /* .btn-close {

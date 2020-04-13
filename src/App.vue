@@ -19,7 +19,7 @@
           >Reset</button>
         </div>
       </header>
-      <table border="1" width="1100" height="200">
+      <table width="1100" height="200">
         <thead>
           <tr>
             <th></th>
@@ -32,7 +32,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(monster, index) in monsters" :key="index" :id="monster.row">
+          <tr v-for="(monster, index) in monsters" :key="index" :class="'row' + index % 4">
             <td>
               <img
                 :src="require('@/assets/' + monster.image +'.png')"
@@ -50,21 +50,21 @@
               <button
                 class="tableButton"
                 id="delete"
-                v-on:click="destroy()"
+                v-on:click="destroy(monster, index)"
                 @mouseover="hover = true"
                 @mouseleave="hover = false"
               >🚫</button>
               <button
                 class="tableButton"
                 id="increaseHealth"
-                v-on:click="incHealth()"
+                v-on:click="incHealth(monster)"
                 @mouseover="hover = true"
                 @mouseleave="hover = false"
               >💗</button>
               <button
                 class="tableButton"
                 id="decreaseHealth"
-                v-on:click="decHealth()"
+                v-on:click="decHealth(monster)"
                 @mouseover="hover = true"
                 @mouseleave="hover = false"
               >🤕</button>
@@ -78,7 +78,15 @@
       v-bind:msg="modalMessage"
       v-show="isModalVisible"
       @close="closeModal"
-    />
+    >
+      <template #options>
+        <div v-if="powersActive === true">
+          <ul v-for="(power, index) in specialPowers" :key="index">
+            <li class="powersList" v-if="index <= d1 - 1">{{power}}</li>
+          </ul>
+        </div>
+      </template>
+    </modal>
   </div>
 </template>
 
@@ -96,6 +104,7 @@ export default {
     return {
       monsters: [],
       races: ["Dragon", "Witch", "Snake", "River Troll"],
+      specialPowers: [],
       monsterNames: names,
       Witch: {},
       Dragon: {},
@@ -103,11 +112,22 @@ export default {
       Snake: {},
       isModalVisible: false,
       modalHeader: "",
-      modalMessage: ""
+      modalMessage: "",
+      d1: 0,
+      d2: 0,
+      powersActive: false
     };
   },
   created() {
     this.createMonsters();
+    this.specialPowers = [
+      "Inceaese Health to 100",
+      "Decrease Opponent Health by 100",
+      "Increase Strength by 1 - 100",
+      "Decrease Opponent Strength by 1-100",
+      "Hide",
+      "Steals 50% of Strength from Opponent"
+    ];
   },
   methods: {
     createName: function(nameList, hash) {
@@ -153,7 +173,6 @@ export default {
           monster.image = "troll";
           monster.name = this.createName(this.monsterNames.troll, this.Troll);
         }
-        monster.row = "row" + (x % 4);
         this.monsters.push(monster);
       }
     },
@@ -164,9 +183,16 @@ export default {
       this.isModalVisible = false;
     },
     rollDice: function() {
-      // window.alert("About to fight");
-      this.modalHeader = "BATTLE!";
-      this.modalMessage = "About to Fight";
+      this.d1 = Math.floor(Math.random() * 6) + 1;
+      this.d2 = Math.floor(Math.random() * 6) + 1;
+      if (this.d1 === this.d2) {
+        this.modalHeader = "SPECIAL POWERS ACTIVATED";
+        this.powersActive = true;
+      } else {
+        this.modalHeader = "DICE ROLLED";
+        this.powersActive = false;
+      }
+      this.modalMessage = "You rolled a " + this.d1 + " and a " + this.d2;
       this.showModal();
     },
     reset: function() {
@@ -176,20 +202,35 @@ export default {
         (this.Snake = {});
       this.createMonsters();
     },
-    destroy: function() {
+    destroy: function(monster, index) {
       this.modalHeader = "Delete Monster";
-      this.modalMessage = "";
+      this.modalMessage = monster.name + " has been deleted";
+      this.monsters.splice(index, 1);
       this.showModal();
     },
-    incHealth: function() {
-      this.modalHeader = "Monster's Health Increased";
-      this.modalMessage = "";
-      this.showModal();
+    incHealth: function(monster) {
+      monster.health++;
+      // this.modalHeader = "Heal Successful";
+      // this.modalMessage =
+      //   monster.name +
+      //   " gained +1 health \n" +
+      //   monster.name +
+      //   " now has " +
+      //   monster.health +
+      //   " health";
+      // this.showModal();
     },
-    decHealth: function() {
-      this.modalHeader = "Monster's Health Decreased";
-      this.modalMessage = "";
-      this.showModal();
+    decHealth: function(monster) {
+      monster.health--;
+      // this.modalHeader = "Health Decrease";
+      // this.modalMessage =
+      //   monster.name +
+      //   " lost -1 health \n" +
+      //   monster.name +
+      //   " now has " +
+      //   monster.health +
+      //   " health";
+      // this.showModal();
     }
   }
 };
@@ -202,7 +243,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  background-color: lightgray;
+  background-image: url("./assets/dragonBackground.jpg");
 }
 
 main {
@@ -219,6 +260,17 @@ header {
 thead {
   font-weight: bold;
   color: #000;
+  background-color: ghostwhite;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
 }
 
 #topButtons {
@@ -260,22 +312,22 @@ thead {
   text-shadow: 2px 2px white;
 }
 
-#row1 {
+.row1 {
   background-color: lightsteelblue;
   font-weight: 800;
 }
 
-#row2 {
+.row2 {
   background-color: lightpink;
   font-weight: 800;
 }
 
-#row3 {
+.row3 {
   background-color: lightcyan;
   font-weight: 800;
 }
 
-#row0 {
+.row0 {
   background-color: lightgoldenrodyellow;
   font-weight: 800;
 }
@@ -299,5 +351,9 @@ thead {
 
 #decreaseHealth:hover {
   background-color: gold;
+}
+
+.powersList {
+  text-align: left;
 }
 </style>
