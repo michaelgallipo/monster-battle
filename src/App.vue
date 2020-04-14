@@ -2,7 +2,6 @@
   <div id="app">
     <main>
       <img alt="Monster Battle Logo" src="./assets/monsterBattle_logo.png" style="height: 150px" />
-      <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
       <header>
         <div id="topButtons">
           <button
@@ -21,11 +20,11 @@
           >Reset</button>
         </div>
       </header>
-      <table width="1100" height="200">
+      <table>
         <thead>
           <tr>
             <th></th>
-            <th>Name</th>
+            <th style="width: 235px">Name</th>
             <th>Type</th>
             <th>Strength</th>
             <th>Health</th>
@@ -37,10 +36,11 @@
           <tr v-for="(monster, index) in monsters" :key="index" :class="'row' + index % 4">
             <td>
               <img
-                :src="require('@/assets/' + monster.image +'.png')"
+                :src="require('@/assets/' + monster.image)"
                 alt="monster image"
                 width="75px"
                 height="75px"
+                style="margin-top: 5px"
               />
             </td>
             <td>{{monster.name}}</td>
@@ -93,9 +93,8 @@
 </template>
 
 <script>
-// import HelloWorld from "./components/HelloWorld.vue";
-import names from "./assets/names.js";
 import modal from "./components/Modal.vue";
+import monsterData from "./assets/monsterData.js";
 
 export default {
   name: "app",
@@ -105,13 +104,8 @@ export default {
   data: function() {
     return {
       monsters: [],
-      races: ["Dragon", "Witch", "Snake", "River Troll"],
+      monsterData: monsterData,
       specialPowers: [],
-      monsterNames: names,
-      Witch: {},
-      Dragon: {},
-      Troll: {},
-      Snake: {},
       isModalVisible: false,
       modalHeader: "",
       modalMessage: "",
@@ -132,15 +126,19 @@ export default {
     ];
   },
   methods: {
-    // method creates a random name depending on race of monster and tracks what names have been used.
-    createName: function(nameList, hash) {
+    // method creates a random name depending on race of monster and tracks what names have been used using a hash.
+    createName: function(active) {
       let named = false;
       let n = 0;
+      // prevents infinite loop if all names used
+      if (Object.keys(active.used).length == active.names.length) {
+        return active.race + " Doe";
+      }
       while (named == false) {
-        n = Math.floor(Math.random() * nameList.length);
-        if (!hash[n]) {
-          hash[n] = true;
-          name = nameList[n];
+        n = Math.floor(Math.random() * active.names.length);
+        if (!active.used[n]) {
+          active.used[n] = true;
+          name = active.names[n];
           named = true;
         }
       }
@@ -151,31 +149,14 @@ export default {
       for (let x = 1; x <= 100; x++) {
         let r = Math.floor(Math.random() * 4);
         let monster = {};
-        monster.race = this.races[r];
-        if (monster.race === "Witch") {
-          monster.health = Math.floor(Math.random() * 11) + 50;
-          monster.strength = Math.floor(Math.random() * 21) + 60;
-          monster.image = "witch";
-          monster.name = this.createName(this.monsterNames.witch, this.Witch);
-        }
-        if (monster.race === "Dragon") {
-          monster.health = Math.floor(Math.random() * 11) + 80;
-          monster.strength = Math.floor(Math.random() * 11) + 80;
-          monster.image = "dragon";
-          monster.name = this.createName(this.monsterNames.dragon, this.Dragon);
-        }
-        if (monster.race === "Snake") {
-          monster.health = Math.floor(Math.random() * 61) + 30;
-          monster.strength = Math.floor(Math.random() * 31) + 30;
-          monster.image = "snake";
-          monster.name = this.createName(this.monsterNames.snake, this.Snake);
-        }
-        if (monster.race === "River Troll") {
-          monster.strength = Math.floor(Math.random() * 34) + 22;
-          monster.health = Math.floor(Math.random() * 33) + 60;
-          monster.image = "troll";
-          monster.name = this.createName(this.monsterNames.troll, this.Troll);
-        }
+        let active = this.monsterData[r];
+        monster.race = active.race;
+        monster.image = active.image;
+        monster.strength =
+          Math.floor(Math.random() * active.minStrength) + active.rangeStrength;
+        monster.health =
+          Math.floor(Math.random() * active.minHealth) + active.rangeHealth;
+        monster.name = this.createName(active);
         this.monsters.push(monster);
       }
     },
@@ -199,10 +180,9 @@ export default {
       this.showModal();
     },
     reset: function() {
-      (this.Witch = {}),
-        (this.Dragon = {}),
-        (this.Troll = {}),
-        (this.Snake = {});
+      this.monsterData.forEach(race => {
+        race.used = {};
+      });
       this.createMonsters();
     },
     destroy: function(monster, index) {
@@ -270,6 +250,8 @@ thead {
 
 table {
   border-collapse: collapse;
+  width: 1100px;
+  height: 200px;
 }
 
 table,
