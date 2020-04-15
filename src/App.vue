@@ -79,6 +79,7 @@
       v-bind:header="modalHeader"
       v-bind:msg="modalMessage"
       v-show="isModalVisible"
+      @roll="rollDice"
       @close="closeModal"
     >
       <template #options>

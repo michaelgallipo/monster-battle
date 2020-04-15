@@ -10,7 +10,8 @@
       </section>
       <footer class="modal-footer">
         <div id="footer">
-          <button type="button" class="btn-green" @click="close">Close</button>
+          <button type="button" class="btn" id="blue" @click="roll">Roll Again</button>
+          <button type="button" class="btn" id="green" @click="close">Close</button>
         </div>
       </footer>
     </div>
@@ -72,13 +73,22 @@
   white-space: pre;
 }
 
-.btn-green {
+.btn {
   color: white;
-  background: #4aae9b;
-  border: 1px solid #4aae9b;
   border-radius: 2px;
   height: 35px;
   font-weight: 800;
+}
+
+#green {
+  background: #4aae9b;
+  border: 1px solid #4aae9b;
+}
+
+#blue {
+  background: navy;
+  border: 1px solid navy;
+  margin-right: 15px;
 }
 </style>
 
@@ -93,6 +103,9 @@ export default {
   methods: {
     close() {
       this.$emit("close");
+    },
+    roll() {
+      this.$emit("roll");
     }
   }
 };
