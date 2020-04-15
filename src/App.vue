@@ -154,9 +154,9 @@ export default {
         monster.race = active.race;
         monster.image = active.image;
         monster.strength =
-          Math.floor(Math.random() * active.minStrength) + active.rangeStrength;
+          Math.floor(Math.random() * active.rangeStrength) + active.minStrength;
         monster.health =
-          Math.floor(Math.random() * active.minHealth) + active.rangeHealth;
+          Math.floor(Math.random() * active.rangeHealth) + active.minHealth;
         monster.name = this.createName(active);
         this.monsters.push(monster);
       }
