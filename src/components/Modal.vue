@@ -10,7 +10,7 @@
       </section>
       <footer class="modal-footer">
         <div id="footer">
-          <button type="button" class="btn" id="blue" @click="roll">Roll Again</button>
+          <button v-if="showRoll" type="button" class="btn" id="blue" @click="roll">Roll Again</button>
           <button type="button" class="btn" id="green" @click="close">Close</button>
         </div>
       </footer>
@@ -97,7 +97,8 @@ export default {
   name: "modal",
   props: {
     header: String,
-    msg: String
+    msg: String,
+    showRoll: Boolean
   },
 
   methods: {

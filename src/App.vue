@@ -78,6 +78,7 @@
     <modal
       v-bind:header="modalHeader"
       v-bind:msg="modalMessage"
+      v-bind:showRoll="showRollDice"
       v-show="isModalVisible"
       @roll="rollDice"
       @close="closeModal"
@@ -112,7 +113,8 @@ export default {
       modalMessage: "",
       d1: 0,
       d2: 0,
-      powersActive: false
+      powersActive: false,
+      showRollDice: false
     };
   },
   created() {
@@ -178,6 +180,7 @@ export default {
         this.powersActive = false;
       }
       this.modalMessage = "You rolled a " + this.d1 + " and a " + this.d2;
+      this.showRollDice = true;
       this.showModal();
     },
     reset: function() {
@@ -190,6 +193,7 @@ export default {
       this.modalHeader = "Delete Monster";
       this.modalMessage = monster.name + " has been deleted";
       this.monsters.splice(index, 1);
+      this.showRollDice = false;
       this.showModal();
     },
     incHealth: function(monster) {
@@ -264,10 +268,11 @@ td {
 #topButtons {
   display: inline-block;
   padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .topButton {
-  height: 40px;
+  height: 50px;
   width: 120px;
   color: white;
   font-size: 16px;
