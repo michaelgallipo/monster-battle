@@ -218,6 +218,7 @@ export default {
         console.log(opponent, this.monsters[opponent].health);
         this.monsters[index].power = "Decrease Opponent Health by 100";
         this.monsters[opponent].health = this.monsters[opponent].health - 100;
+        console.log(this.monsters[opponent].health);
         if (this.monsters[opponent].health < 1) {
           this.monsters[opponent].display = false;
           this.monsters[opponent].fighting = false;
@@ -263,8 +264,10 @@ export default {
         let opponent = this.monsters[index].opponentIndex;
         this.monsters[index].opponent = "";
         this.monsters[index].opponentIndex = "";
+        this.monsters[index].fighting = false;
         this.monsters[opponent].opponent = "";
         this.monsters[opponent].opponentIndex = "";
+        this.monsters[opponent].fighting = false;
         availMonsters.splice(selected, 1);
       }
     },
@@ -319,8 +322,8 @@ export default {
       }
       this.d1 = Math.floor(Math.random() * 6) + 1;
       this.d2 = Math.floor(Math.random() * 6) + 1;
-      // this.d1 = 4;
-      // this.d2 = 4;
+      // this.d1 = 5;
+      // this.d2 = 5;
       if (this.d1 === this.d2) {
         this.allocatePowers();
         this.modalHeader = "SPECIAL POWERS ACTIVATED";
@@ -376,7 +379,9 @@ export default {
       // this.showModal();
     },
     decHealth: function(monster) {
-      monster.health--;
+      if (monster.health > 0) {
+        monster.health--;
+      }
       // Modal message generation before deactivated
       // this.modalHeader = "Health Decrease";
       // this.modalMessage =
@@ -449,11 +454,12 @@ td {
 
 .topButton:hover {
   color: #000;
-  text-shadow: 2px 2px white;
+  /* text-shadow: 2px 2px white; */
+  background-color: silver;
 }
 
 #roll {
-  background-color: navy;
+  background-color: royalblue;
   left: 35vw;
 }
 
