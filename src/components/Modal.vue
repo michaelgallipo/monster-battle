@@ -11,6 +11,13 @@
       <footer class="modal-footer">
         <div id="footer">
           <button v-if="showRoll" type="button" class="btn" id="blue" @click="roll">Roll Again</button>
+          <button
+            v-if="roundComplete"
+            type="button"
+            class="btn"
+            id="purple"
+            @click="newRound"
+          >New Round</button>
           <button type="button" class="btn" id="green" @click="close">Close</button>
         </div>
       </footer>
@@ -90,6 +97,12 @@
   border: 1px solid navy;
   margin-right: 15px;
 }
+
+#purple {
+  background: purple;
+  border: 1px solid purple;
+  margin-right: 15px;
+}
 </style>
 
 <script>
@@ -98,7 +111,8 @@ export default {
   props: {
     header: String,
     msg: String,
-    showRoll: Boolean
+    showRoll: Boolean,
+    roundComplete: Boolean
   },
 
   methods: {
@@ -107,6 +121,10 @@ export default {
     },
     roll() {
       this.$emit("roll");
+    },
+    newRound() {
+      this.$emit("newRound");
+      this.$emit("close");
     }
   }
 };
