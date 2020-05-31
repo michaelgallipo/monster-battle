@@ -26,14 +26,15 @@
             <th></th>
             <th style="width: 235px">Name</th>
             <th>Type</th>
+            <th>Opponent</th>
             <th>Strength</th>
             <th>Health</th>
             <th>Special Power</th>
             <th>Action</th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-for="(monster, index) in monsters" :key="index" :class="'row' + index % 4">
+        <tbody v-for="(monster, index) in monsters" :key="index">
+          <tr v-if="monster.display === true" :class="'row' + index % 4">
             <td>
               <img
                 :src="require('@/assets/' + monster.image)"
@@ -45,9 +46,10 @@
             </td>
             <td>{{monster.name}}</td>
             <td>{{monster.race}}</td>
+            <td>{{monster.opponent}}</td>
             <td>{{monster.strength}}</td>
             <td>{{monster.health}}</td>
-            <td></td>
+            <td>{{monster.power}}</td>
             <td style="width: 300px">
               <button
                 class="tableButton"
@@ -79,8 +81,10 @@
       v-bind:header="modalHeader"
       v-bind:msg="modalMessage"
       v-bind:showRoll="showRollDice"
+      v-bind:roundComplete="roundComplete"
       v-show="isModalVisible"
       @roll="rollDice"
+      @newRound="matchOpponents"
       @close="closeModal"
     >
       <template #options>
@@ -114,7 +118,10 @@ export default {
       d1: 0,
       d2: 0,
       powersActive: false,
-      showRollDice: false
+      showRollDice: false,
+      matched: false,
+      round: 1,
+      roundComplete: false
     };
   },
   created() {
@@ -160,8 +167,145 @@ export default {
         monster.health =
           Math.floor(Math.random() * active.rangeHealth) + active.minHealth;
         monster.name = this.createName(active);
+        monster.index = x - 1;
+        monster.opponent = "";
+        monster.display = true;
+        monster.power = "";
+        monster.fighting = true;
         this.monsters.push(monster);
       }
+      this.matchOpponents();
+    },
+    matchOpponents: function() {
+      let unmatched = this.monsters.filter(
+        monster => monster.opponent === "" && monster.display === true
+      );
+      while (unmatched.length > 1) {
+        let m1 = unmatched.length - 1;
+        let m2 = Math.floor(Math.random() * (unmatched.length - 1));
+        let monster1 = unmatched[m1];
+        let monster2 = unmatched[m2];
+        this.monsters[monster1.index].opponent = monster2.name;
+        this.monsters[monster1.index].opponentIndex = monster2.index;
+        this.monsters[monster1.index].fighting = true;
+        this.monsters[monster1.index].power = "";
+        this.monsters[monster1.index].turn = 1;
+        this.monsters[monster2.index].opponent = monster1.name;
+        this.monsters[monster2.index].opponentIndex = monster1.index;
+        this.monsters[monster2.index].fighting = true;
+        this.monsters[monster2.index].power = "";
+        this.monsters[monster2.index].turn = 2;
+        unmatched = this.monsters.filter(monster => monster.opponent === "");
+      }
+      this.matched = true;
+    },
+    allocatePowers: function() {
+      let availMonsters = this.monsters.filter(
+        monster => monster.power === "" && monster.fighting === true
+      );
+      if (availMonsters.length > 0) {
+        let selected = Math.floor(Math.random() * availMonsters.length);
+        let index = availMonsters[selected].index;
+        this.monsters[index].power = "Inceaese Health to 100";
+        this.monsters[index].health = 100;
+        console.log(this.monsters[index].health, this.monsters[index].name);
+        availMonsters.splice(selected, 1);
+      }
+      if (this.d1 > 1 && availMonsters.length > 0) {
+        let selected = Math.floor(Math.random() * availMonsters.length);
+        let index = availMonsters[selected].index;
+        let opponent = availMonsters[selected].opponentIndex;
+        console.log(opponent, this.monsters[opponent].health);
+        this.monsters[index].power = "Decrease Opponent Health by 100";
+        this.monsters[opponent].health = this.monsters[opponent].health - 100;
+        if (this.monsters[opponent].health < 1) {
+          this.monsters[opponent].display = false;
+          this.monsters[opponent].fighting = false;
+          this.monsters[index].opponent = "";
+          this.monsters[index].fighting = false;
+        }
+        availMonsters.splice(selected, 1);
+      }
+      if (this.d1 > 2 && availMonsters.length > 0) {
+        let selected = Math.floor(Math.random() * availMonsters.length);
+        let index = availMonsters[selected].index;
+        this.monsters[index].power = "Increase Strength by 1 - 100";
+        let strInc = Math.floor(Math.random() * 100);
+        this.monsters[index].strength = this.monsters[index].strength + strInc;
+        availMonsters.splice(selected, 1);
+      }
+      if (this.d1 > 3 && availMonsters.length > 0) {
+        let selected = Math.floor(Math.random() * availMonsters.length);
+        let index = availMonsters[selected].index;
+        this.monsters[index].power = "Decrease Strength by 1 - 100";
+        let strDec = Math.floor(Math.random() * 100);
+        let net = this.monsters[index].strength - strDec;
+        this.monsters[index].strength = net <= 0 ? 0 : net;
+        availMonsters.splice(selected, 1);
+      }
+      if (this.d1 > 5 && availMonsters.length > 0) {
+        let selected = Math.floor(Math.random() * availMonsters.length);
+        let index = availMonsters[selected].index;
+        this.monsters[availMonsters[selected].index].power =
+          "Steals 50% of Strength from Opponent";
+        let opponent = this.monsters[index].opponentIndex;
+        let change = Math.floor(this.monsters[opponent].strength / 2);
+        console.log(change);
+        this.monsters[index].strength = this.monsters[index].strength + change;
+        this.monsters[opponent].strength =
+          this.monsters[opponent].strength - change;
+        availMonsters.splice(selected, 1);
+      }
+      if (this.d1 > 4 && availMonsters.length > 0) {
+        let selected = Math.floor(Math.random() * availMonsters.length);
+        let index = availMonsters[selected].index;
+        this.monsters[availMonsters[selected].index].power = "Hide";
+        let opponent = this.monsters[index].opponentIndex;
+        this.monsters[index].opponent = "";
+        this.monsters[index].opponentIndex = "";
+        this.monsters[opponent].opponent = "";
+        this.monsters[opponent].opponentIndex = "";
+        availMonsters.splice(selected, 1);
+      }
+    },
+    combat: function() {
+      let turn1Monsters = this.monsters.filter(
+        monster => monster.turn === 1 && monster.fighting === true
+      );
+      let opponent;
+      turn1Monsters.forEach(monster => {
+        opponent = monster.opponentIndex;
+        if (monster.strength + this.d1 >= this.monsters[opponent].health) {
+          this.monsters[opponent].health = 0;
+          this.monsters[opponent].fighting = false;
+          this.monsters[opponent].display = false;
+          this.monsters[monster.index].fighting = false;
+          this.monsters[monster.index].opponent = "";
+          this.monsters[monster.index].power = "";
+          // console.log(this.monsters[opponent].name + " killed");
+        } else {
+          this.monsters[opponent].health =
+            this.monsters[opponent].health - (monster.strength + this.d1);
+        }
+      });
+      let turn2Monsters = this.monsters.filter(
+        monster => monster.turn === 2 && monster.fighting === true
+      );
+      turn2Monsters.forEach(monster => {
+        opponent = monster.opponentIndex;
+        if (monster.strength + this.d2 >= this.monsters[opponent].health) {
+          this.monsters[opponent].health = 0;
+          this.monsters[opponent].fighting = false;
+          this.monsters[opponent].display = false;
+          this.monsters[monster.index].fighting = false;
+          this.monsters[monster.index].opponent = "";
+          this.monsters[monster.index].power = "";
+          // console.log(this.monsters[opponent].name + " killed");
+        } else {
+          this.monsters[opponent].health =
+            this.monsters[opponent].health - (monster.strength + this.d2);
+        }
+      });
     },
     showModal() {
       this.isModalVisible = true;
@@ -170,23 +314,45 @@ export default {
       this.isModalVisible = false;
     },
     rollDice: function() {
+      if (!this.matched) {
+        this.matchOpponents();
+      }
       this.d1 = Math.floor(Math.random() * 6) + 1;
       this.d2 = Math.floor(Math.random() * 6) + 1;
+      // this.d1 = 4;
+      // this.d2 = 4;
       if (this.d1 === this.d2) {
+        this.allocatePowers();
         this.modalHeader = "SPECIAL POWERS ACTIVATED";
-        this.powersActive = true;
+        // this.powersActive = true;
       } else {
         this.modalHeader = "DICE ROLLED";
         this.powersActive = false;
       }
       this.modalMessage = "You rolled a " + this.d1 + " and a " + this.d2;
       this.showRollDice = true;
+      this.combat();
+      let active = this.monsters.filter(monster => monster.fighting === true);
+      let alive = this.monsters.filter(monster => monster.display === true);
+      if (active.length < 1) {
+        if (alive.length > 1) {
+          this.modalHeader = "ROUND " + this.round + " COMPLETE";
+          this.roundComplete = true;
+          this.showRollDice = false;
+          this.round = this.round + 1;
+        } else {
+          this.modalHeader = "Battle Over";
+          this.showRollDice = false;
+          this.roundComplete = false;
+        }
+      }
       this.showModal();
     },
     reset: function() {
       this.monsterData.forEach(race => {
         race.used = {};
       });
+      this.round = 1;
       this.createMonsters();
     },
     destroy: function(monster, index) {
