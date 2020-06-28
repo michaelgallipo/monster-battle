@@ -290,7 +290,7 @@ export default {
           this.monstersKilled.push(this.monsters[opponent].name);
           this.monsters[monster.index].fighting = false;
           this.monsters[monster.index].opponent = "";
-          this.monsters[monster.index].power = "";
+          // this.monsters[monster.index].power = "";
         } else {
           this.monsters[opponent].health =
             this.monsters[opponent].health -
@@ -312,8 +312,7 @@ export default {
           this.monstersKilled.push(this.monsters[opponent].name);
           this.monsters[monster.index].fighting = false;
           this.monsters[monster.index].opponent = "";
-          this.monsters[monster.index].power = "";
-          // console.log(this.monsters[opponent].name + " killed");
+          // this.monsters[monster.index].power = "";
         } else {
           this.monsters[opponent].health =
             this.monsters[opponent].health -
