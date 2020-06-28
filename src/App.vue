@@ -88,9 +88,14 @@
       @close="closeModal"
     >
       <template #options>
-        <div v-if="powersActive === true">
-          <ul v-for="(power, index) in specialPowers" :key="index">
-            <li class="powersList" v-if="index <= d1 - 1">{{power}}</li>
+        <div v-if="deaths === true">
+          <div>Monsters Killed This Turn</div>
+          <ul
+            v-for="(monster, index) in monstersKilled"
+            :key="index"
+            style="margin-top: 2px; margin-bottom: 2px"
+          >
+            <li class="powersList">{{monster}}</li>
           </ul>
         </div>
       </template>
@@ -111,13 +116,14 @@ export default {
     return {
       monsters: [],
       monsterData: monsterData,
-      specialPowers: [],
       isModalVisible: false,
       modalHeader: "",
       modalMessage: "",
       d1: 0,
       d2: 0,
-      powersActive: false,
+      // powersActive: false,
+      deaths: false,
+      monstersKilled: [],
       showRollDice: false,
       matched: false,
       round: 1,
@@ -126,14 +132,6 @@ export default {
   },
   created() {
     this.createMonsters();
-    this.specialPowers = [
-      "Inceaese Health to 100",
-      "Decrease Opponent Health by 100",
-      "Increase Strength by 1 - 100",
-      "Decrease Opponent Strength by 1-100",
-      "Hide",
-      "Steals 50% of Strength from Opponent"
-    ];
   },
   methods: {
     // method creates a random name depending on race of monster and tracks what names have been used using a hash.
@@ -155,8 +153,9 @@ export default {
       return name;
     },
     createMonsters: function() {
+      // set total monsters to 50 because 100 was causing issues with modal when listing monsters killed
       this.monsters = [];
-      for (let x = 1; x <= 100; x++) {
+      for (let x = 1; x <= 50; x++) {
         let r = Math.floor(Math.random() * 4);
         let monster = {};
         let active = this.monsterData[r];
@@ -176,6 +175,7 @@ export default {
       }
       this.matchOpponents();
     },
+    //Opponents are matched at initial creation and after each round
     matchOpponents: function() {
       let unmatched = this.monsters.filter(
         monster => monster.opponent === "" && monster.display === true
@@ -185,21 +185,23 @@ export default {
         let m2 = Math.floor(Math.random() * (unmatched.length - 1));
         let monster1 = unmatched[m1];
         let monster2 = unmatched[m2];
+        let randomTurn = Math.floor(Math.random() * 2) + 1;
         this.monsters[monster1.index].opponent = monster2.name;
         this.monsters[monster1.index].opponentIndex = monster2.index;
         this.monsters[monster1.index].fighting = true;
         this.monsters[monster1.index].power = "";
-        this.monsters[monster1.index].turn = 1;
+        this.monsters[monster1.index].turn = randomTurn < 2 ? 1 : 2;
         this.monsters[monster2.index].opponent = monster1.name;
         this.monsters[monster2.index].opponentIndex = monster1.index;
         this.monsters[monster2.index].fighting = true;
         this.monsters[monster2.index].power = "";
-        this.monsters[monster2.index].turn = 2;
+        this.monsters[monster2.index].turn = randomTurn > 1 ? 1 : 2;
         unmatched = this.monsters.filter(monster => monster.opponent === "");
       }
       this.matched = true;
     },
     allocatePowers: function() {
+      // only allows monsters currently fighting and without powers this round to get powers
       let availMonsters = this.monsters.filter(
         monster => monster.power === "" && monster.fighting === true
       );
@@ -208,22 +210,20 @@ export default {
         let index = availMonsters[selected].index;
         this.monsters[index].power = "Inceaese Health to 100";
         this.monsters[index].health = 100;
-        console.log(this.monsters[index].health, this.monsters[index].name);
         availMonsters.splice(selected, 1);
       }
       if (this.d1 > 1 && availMonsters.length > 0) {
         let selected = Math.floor(Math.random() * availMonsters.length);
         let index = availMonsters[selected].index;
         let opponent = availMonsters[selected].opponentIndex;
-        console.log(opponent, this.monsters[opponent].health);
         this.monsters[index].power = "Decrease Opponent Health by 100";
         this.monsters[opponent].health = this.monsters[opponent].health - 100;
-        console.log(this.monsters[opponent].health);
         if (this.monsters[opponent].health < 1) {
           this.monsters[opponent].display = false;
           this.monsters[opponent].fighting = false;
           this.monsters[index].opponent = "";
           this.monsters[index].fighting = false;
+          this.monstersKilled.push(this.monsters[opponent].name);
         }
         availMonsters.splice(selected, 1);
       }
@@ -241,6 +241,7 @@ export default {
         this.monsters[index].power = "Decrease Strength by 1 - 100";
         let strDec = Math.floor(Math.random() * 100);
         let net = this.monsters[index].strength - strDec;
+        // sets new strength while preventing strength from dropping below 0
         this.monsters[index].strength = net <= 0 ? 0 : net;
         availMonsters.splice(selected, 1);
       }
@@ -251,12 +252,12 @@ export default {
           "Steals 50% of Strength from Opponent";
         let opponent = this.monsters[index].opponentIndex;
         let change = Math.floor(this.monsters[opponent].strength / 2);
-        console.log(change);
         this.monsters[index].strength = this.monsters[index].strength + change;
         this.monsters[opponent].strength =
           this.monsters[opponent].strength - change;
         availMonsters.splice(selected, 1);
       }
+      // allocates Hide last so all other powers take effect prior to hiding
       if (this.d1 > 4 && availMonsters.length > 0) {
         let selected = Math.floor(Math.random() * availMonsters.length);
         let index = availMonsters[selected].index;
@@ -272,23 +273,28 @@ export default {
       }
     },
     combat: function() {
+      this.deaths = false;
       let turn1Monsters = this.monsters.filter(
         monster => monster.turn === 1 && monster.fighting === true
       );
       let opponent;
       turn1Monsters.forEach(monster => {
         opponent = monster.opponentIndex;
-        if (monster.strength + this.d1 >= this.monsters[opponent].health) {
+        if (
+          monster.strength + this.d1 + this.d2 >=
+          this.monsters[opponent].health
+        ) {
           this.monsters[opponent].health = 0;
           this.monsters[opponent].fighting = false;
           this.monsters[opponent].display = false;
+          this.monstersKilled.push(this.monsters[opponent].name);
           this.monsters[monster.index].fighting = false;
           this.monsters[monster.index].opponent = "";
           this.monsters[monster.index].power = "";
-          // console.log(this.monsters[opponent].name + " killed");
         } else {
           this.monsters[opponent].health =
-            this.monsters[opponent].health - (monster.strength + this.d1);
+            this.monsters[opponent].health -
+            (monster.strength + this.d1 + this.d2);
         }
       });
       let turn2Monsters = this.monsters.filter(
@@ -296,19 +302,27 @@ export default {
       );
       turn2Monsters.forEach(monster => {
         opponent = monster.opponentIndex;
-        if (monster.strength + this.d2 >= this.monsters[opponent].health) {
+        if (
+          monster.strength + this.d1 + this.d2 >=
+          this.monsters[opponent].health
+        ) {
           this.monsters[opponent].health = 0;
           this.monsters[opponent].fighting = false;
           this.monsters[opponent].display = false;
+          this.monstersKilled.push(this.monsters[opponent].name);
           this.monsters[monster.index].fighting = false;
           this.monsters[monster.index].opponent = "";
           this.monsters[monster.index].power = "";
           // console.log(this.monsters[opponent].name + " killed");
         } else {
           this.monsters[opponent].health =
-            this.monsters[opponent].health - (monster.strength + this.d2);
+            this.monsters[opponent].health -
+            (monster.strength + this.d1 + this.d2);
         }
       });
+      if (this.monstersKilled.length > 0) {
+        this.deaths = true;
+      }
     },
     showModal() {
       this.isModalVisible = true;
@@ -320,17 +334,15 @@ export default {
       if (!this.matched) {
         this.matchOpponents();
       }
+      this.monstersKilled = [];
+      this.roundComplete = false;
       this.d1 = Math.floor(Math.random() * 6) + 1;
       this.d2 = Math.floor(Math.random() * 6) + 1;
-      // this.d1 = 5;
-      // this.d2 = 5;
       if (this.d1 === this.d2) {
         this.allocatePowers();
         this.modalHeader = "SPECIAL POWERS ACTIVATED";
-        // this.powersActive = true;
       } else {
         this.modalHeader = "DICE ROLLED";
-        this.powersActive = false;
       }
       this.modalMessage = "You rolled a " + this.d1 + " and a " + this.d2;
       this.showRollDice = true;
@@ -344,7 +356,7 @@ export default {
           this.showRollDice = false;
           this.round = this.round + 1;
         } else {
-          this.modalHeader = "Battle Over";
+          this.modalHeader = "Battle Over! The Winner is " + alive[0].name;
           this.showRollDice = false;
           this.roundComplete = false;
         }
@@ -367,31 +379,11 @@ export default {
     },
     incHealth: function(monster) {
       monster.health++;
-      // Modal message generation before deactivated
-      // this.modalHeader = "Heal Successful";
-      // this.modalMessage =
-      //   monster.name +
-      //   " gained +1 health \n" +
-      //   monster.name +
-      //   " now has " +
-      //   monster.health +
-      //   " health";
-      // this.showModal();
     },
     decHealth: function(monster) {
       if (monster.health > 0) {
         monster.health--;
       }
-      // Modal message generation before deactivated
-      // this.modalHeader = "Health Decrease";
-      // this.modalMessage =
-      //   monster.name +
-      //   " lost -1 health \n" +
-      //   monster.name +
-      //   " now has " +
-      //   monster.health +
-      //   " health";
-      // this.showModal();
     }
   }
 };
@@ -503,5 +495,6 @@ td {
 
 .powersList {
   text-align: left;
+  font-size: 10px;
 }
 </style>
